@@ -1,0 +1,146 @@
+/* Basic shared styles for all admin pages. Add your own for full design! */
+body {
+  font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+  background: #f7f8fa;
+  margin: 0;
+  color: #222;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 240px;
+  background: linear-gradient(180deg, #223046 0%, #2b4162 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 30px 20px 20px 30px;
+  border-bottom: 1px solid #3c486b;
+}
+.logo img { width: 48px; height: 48px; border-radius: 9px; object-fit: contain; }
+.logo-text { font-size: 1.24em; font-weight: 700; color: #33aaff; }
+
+.sidebar nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 22px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 28px;
+  color: #d9e3f0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background .15s, color .18s;
+  border-left: 4px solid transparent;
+}
+.nav-link.active, .nav-link:hover {
+  background: #24375c;
+  color: #fff;
+  border-left: 4px solid #33aaff;
+}
+.nav-link i { font-size: 1.15em; }
+.sidebar-footer {
+  padding: 20px 28px;
+  border-top: 1px solid #2e3d59;
+  font-size: .97em;
+  color: #8fa2c0;
+}
+
+.main {
+  margin-left: 240px;
+  min-height: 100vh;
+}
+@media (max-width:800px) {
+  .sidebar { width: 60px; }
+  .main { margin-left: 60px; }
+  .logo-text, .nav-link span, .sidebar-footer { display: none; }
+  .nav-link { justify-content: center; padding: 14px 0; }
+  .logo { justify-content: center; padding: 30px 0 20px 0; }
+}
+.navbar {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 36px 18px 36px;
+  border-bottom: 1px solid #e9ecef;
+  position: sticky;
+  top: 0; z-index: 90;
+}
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: #f3f7fb;
+  border-radius: 8px;
+  padding: 0 14px;
+  border: 1px solid #e9ecef;
+  max-width: 340px;
+}
+.search-bar input[type="search"] {
+  border: none; outline: none; background: transparent;
+  padding: 12px 0;
+  font-size: 1em;
+  flex: 1;
+}
+.nav-icons {
+  display: flex; align-items: center; gap: 20px;
+}
+.icon-btn {
+  font-size: 1.15em;
+  color: #33aaff;
+  background: #eef6fc;
+  border: none;
+  border-radius: 50%;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+.profile-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+.profile-dropdown .avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #33aaff;
+}
+.profile-dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0; top: 46px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(44,62,80,0.16);
+  min-width: 140px;
+  z-index: 99;
+  padding: 10px 0;
+}
+.profile-dropdown:hover .dropdown-menu { display: block; }
+.dropdown-menu a {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 18px; color: #222;
+  text-decoration: none; font-size: .99em;
+  transition: background .14s;
+}
+.dropdown-menu a:hover { background: #f2f5fa; }
+.content {
+  padding: 28px 38px 0 38px;
+  min-height: 90vh;
+}
+@media (max-width:650px) {
+  .content { padding: 8px 2vw 0 2vw;}
+  .navbar { padding: 12px 2vw;}
+}
+h1 { font-size: 1.35rem; font-weight: 700; color: #223046; margin-bottom: 28px; }
