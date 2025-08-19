@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Admin Dashboard - CribzConnect</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
+        .admin-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+        .admin-sidebar { background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%); color: white; padding: 20px 0; position: fixed; width: 280px; height: 100vh; overflow-y: auto; }
+        .admin-logo { text-align: center; padding: 25px 20px; border-bottom: 1px solid #34495e; margin-bottom: 25px; }
+        .admin-logo .logo-icon { width: 60px; height: 60px; margin: 0 auto 15px auto; }
+        .admin-logo .logo-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+        .admin-logo h2 { color: #3498db; margin: 0; font-size: 1.4rem; }
+        .admin-nav-item { display: flex; align-items: center; padding: 15px 20px; color: #ecf0f1; cursor: pointer; border-radius: 10px; margin: 8px 15px; transition: all 0.3s ease; }
+        .admin-nav-item:hover { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .admin-nav-item.active { background: #3498db; color: white; }
+        .admin-nav-item i { margin-right: 15px; width: 20px; }
+        .admin-main { margin-left: 280px; padding: 30px; }
+        .admin-header { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 35px; }
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 35px; }
+        .stat-card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-left: 5px solid #3498db; }
+        .stat-number { font-size: 2.8rem; font-weight: 800; color: #2c3e50; margin-bottom: 12px; }
+        .stat-label { color: #6c757d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .admin-content { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 35px; }
+        .content-header { background: #f8f9fa; padding: 25px 30px; border-bottom: 1px solid #e9ecef; }
+        .content-body { padding: 30px; }
+        .btn-primary { background: #3498db; color: white; padding: 14px 24px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+        .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 18px 20px; text-align: left; border-bottom: 1px solid #f1f3f4; }
+        .data-table th { background: #f8f9fa; font-weight: 700; color: #2c3e50; }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+        .status-approved { background: #27ae60; color: white; }
+        .status-pending { background: #f39c12; color: white; }
+        .status-suspended { background: #e74c3c; color: white; }
+        .action-btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; margin-right: 8px; color: white; }
+        .btn-edit { background: #3498db; }
+        .btn-delete { background: #e74c3c; }
+        .btn-approve { background: #27ae60; }
+        .btn-reject { background: #f39c12; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; font-weight: 700; color: #2c3e50; }
+        .form-control { width: 100%; padding: 16px 20px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 1rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px; }
+        .search-bar { display: flex; gap: 20px; margin-bottom: 25px; align-items: center; }
+        .search-input { flex: 1; padding: 16px 20px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 1rem; }
+        .filter-select { padding: 16px 20px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 1rem; min-width: 180px; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <div class="logo-icon">
+                    <img src="logo.png" alt="CribzConnect Logo">
+                </div>
+                <h2>CribzConnect</h2>
+                <div>Admin Dashboard</div>
+            </div>
+            
+            <nav class="admin-nav">
+                <div class="admin-nav-item active" data-tab="overview">
+                    <i class="fas fa-tachometer-alt"></i> Overview
+                </div>
+                <div class="admin-nav-item" data-tab="users">
+                    <i class="fas fa-users"></i> All Users
+                </div>
+                <div class="admin-nav-item" data-tab="properties">
+                    <i class="fas fa-home"></i> All Properties
+                </div>
+                <div class="admin-nav-item" data-tab="pending-properties">
+                    <i class="fas fa-clock"></i> Pending Approval
+                </div>
+                <div class="admin-nav-item" data-tab="transactions">
+                    <i class="fas fa-money-bill-wave"></i> Transactions
+                </div>
+                <div class="admin-nav-item" data-tab="settings">
+                    <i class="fas fa-cog"></i> Site Settings
+                </div>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-header">
+                <div>
+                    <h1 id="page-title">Admin Dashboard</h1>
+                    <p>Welcome back, Administrator</p>
+                </div>
+                <div>
+                    <button class="btn-primary" onclick="refreshData()">Refresh</button>
+                    <button class="btn-primary" onclick="logout()" style="background: #e74c3c; margin-left: 15px;">Logout</button>
+                </div>
+            </div>
+
+            <div class="tab-content active" id="overview">
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-users">5</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-properties">5</div>
+                        <div class="stat-label">Total Properties</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-revenue">980,000 XAF</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-bookings">23</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="users">
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>User Management</h2>
+                        <button class="btn-primary">Add User</button>
+                    </div>
+                    <div class="content-body">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Search users...">
+                            <select class="filter-select">
+                                <option value="">All Roles</option>
+                                <option value="host">Host</option>
+                                <option value="renter">Renter</option>
+                            </select>
+                        </div>
+                        
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#U001</td>
+                                        <td>John Doe</td>
+                                        <td>john.doe@email.com</td>
+                                        <td>Property Host</td>
+                                        <td><span class="status-badge status-approved">Active</span></td>
+                                        <td>2024-01-15</td>
+                                        <td>
+                                            <button class="action-btn btn-edit">Edit</button>
+                                            <button class="action-btn btn-delete">Delete</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#U002</td>
+                                        <td>Jane Smith</td>
+                                        <td>jane.smith@email.com</td>
+                                        <td>Agent</td>
+                                        <td><span class="status-badge status-approved">Active</span></td>
+                                        <td>2024-01-20</td>
+                                        <td>
+                                            <button class="action-btn btn-edit">Edit</button>
+                                            <button class="action-btn btn-delete">Delete</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#U003</td>
+                                        <td>Mike Johnson</td>
+                                        <td>mike.j@email.com</td>
+                                        <td>Regular User</td>
+                                        <td><span class="status-badge status-pending">Pending</span></td>
+                                        <td>2024-02-01</td>
+                                        <td>
+                                            <button class="action-btn btn-edit">Edit</button>
+                                            <button class="action-btn btn-delete">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="properties">
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>Property Management</h2>
+                        <button class="btn-primary">Add Property</button>
+                    </div>
+                    <div class="content-body">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="Search properties...">
+                            <select class="filter-select">
+                                <option value="">All Types</option>
+                                <option value="apartment">Apartment</option>
+                                <option value="house">House</option>
+                            </select>
+                        </div>
+                        
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Property ID</th>
+                                        <th>Title</th>
+                                        <th>Host</th>
+                                        <th>Type</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#P001</td>
+                                        <td>Luxury Downtown Apartment</td>
+                                        <td>John Doe</td>
+                                        <td>Apartment</td>
+                                        <td>250,000 XAF</td>
+                                        <td><span class="status-badge status-approved">Active</span></td>
+                                        <td>2024-01-15</td>
+                                        <td>
+                                            <button class="action-btn btn-edit">Edit</button>
+                                            <button class="action-btn btn-delete">Delete</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#P002</td>
+                                        <td>Cozy Studio Near University</td>
+                                        <td>Jane Smith</td>
+                                        <td>Studio</td>
+                                        <td>120,000 XAF</td>
+                                        <td><span class="status-badge status-approved">Active</span></td>
+                                        <td>2024-01-20</td>
+                                        <td>
+                                            <button class="action-btn btn-edit">Edit</button>
+                                            <button class="action-btn btn-delete">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="pending-properties">
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>Pending Properties</h2>
+                        <button class="btn-primary">Approve All</button>
+                    </div>
+                    <div class="content-body">
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Property ID</th>
+                                        <th>Title</th>
+                                        <th>Host</th>
+                                        <th>Type</th>
+                                        <th>Price</th>
+                                        <th>Submitted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#P003</td>
+                                        <td>Modern Office Space</td>
+                                        <td>Mike Johnson</td>
+                                        <td>Office</td>
+                                        <td>150,000 XAF</td>
+                                        <td>6 hours ago</td>
+                                        <td>
+                                            <button class="action-btn btn-approve">Approve</button>
+                                            <button class="action-btn btn-reject">Reject</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="transactions">
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>Financial Transactions</h2>
+                    </div>
+                    <div class="content-body">
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>User</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#TX001</td>
+                                        <td>Booking</td>
+                                        <td>150,000 XAF</td>
+                                        <td>John Doe</td>
+                                        <td><span class="status-badge status-approved">Completed</span></td>
+                                        <td>2024-02-01</td>
+                                        <td>
+                                            <button class="action-btn btn-edit">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="settings">
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>Site Settings</h2>
+                    </div>
+                    <div class="content-body">
+                        <form>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Site Name</label>
+                                    <input type="text" class="form-control" value="CribzConnect">
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Fee (%)</label>
+                                    <input type="number" class="form-control" value="10">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Email</label>
+                                <input type="email" class="form-control" value="admin@cribzconnect.com">
+                            </div>
+                            <button type="submit" class="btn-primary">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        class AdminPanel {
+            constructor() {
+                this.currentTab = 'overview';
+                this.init();
+            }
+
+            init() {
+                this.checkAuth();
+                this.bindEvents();
+            }
+
+            checkAuth() {
+                const isLoggedIn = localStorage.getItem('admin_logged_in');
+                if (!isLoggedIn) {
+                    window.location.href = 'admin_login.html';
+                }
+            }
+
+            bindEvents() {
+                document.querySelectorAll('.admin-nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        this.switchTab(e.currentTarget.dataset.tab);
+                    });
+                });
+            }
+
+            switchTab(tabName) {
+                document.querySelectorAll('.admin-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName).classList.add('active');
+
+                this.currentTab = tabName;
+            }
+        }
+
+        function refreshData() {
+            location.reload();
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('admin_logged_in');
+                localStorage.removeItem('admin_user');
+                window.location.href = 'admin_login.html';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.adminPanel = new AdminPanel();
+        });
+    </script>
+</body>
+</html>
