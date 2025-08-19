@@ -3,503 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Admin Dashboard - CribzConnect</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
-        
-        .admin-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
-        
-        .admin-sidebar { 
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%); 
-            color: white; 
-            padding: 20px 0; 
-            position: fixed; 
-            width: 280px; 
-            height: 100vh; 
-            overflow-y: auto; 
-            z-index: 1000;
+        html, body { height: 100%; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #f7f8fa; 
+            min-height: 100vh;
         }
-        
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 0;
+            width: 260px;
+            flex-shrink: 0;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1000;
+            transition: left 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
         .admin-logo { 
             text-align: center; 
             padding: 25px 20px; 
             border-bottom: 1px solid #34495e; 
             margin-bottom: 25px; 
         }
-        
         .admin-logo .logo-icon { 
-            width: 60px; 
-            height: 60px; 
-            margin: 0 auto 15px auto; 
+            width: 60px; height: 60px; margin: 0 auto 15px auto; 
         }
-        
-        .admin-logo .logo-icon img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
-            border-radius: 8px; 
-        }
-        
-        .admin-logo h2 { 
-            color: #3498db; 
-            margin: 0; 
-            font-size: 1.4rem; 
-        }
-        
+        .admin-logo .logo-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+        .admin-logo h2 { color: #3498db; margin: 0; font-size: 1.4rem; }
+        .admin-nav { flex: 1; }
         .admin-nav-item { 
-            display: flex; 
-            align-items: center; 
-            padding: 15px 20px; 
-            color: #ecf0f1; 
-            cursor: pointer; 
-            border-radius: 10px; 
-            margin: 8px 15px; 
-            transition: all 0.3s ease; 
+            display: flex; align-items: center; 
+            padding: 15px 20px; color: #ecf0f1; 
+            cursor: pointer; border-radius: 10px; 
+            margin: 8px 15px; transition: all 0.3s ease; 
+            font-weight: 500; 
         }
-        
-        .admin-nav-item:hover { 
-            background: rgba(52, 152, 219, 0.2); 
-            color: #3498db; 
+        .admin-nav-item:hover { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .admin-nav-item.active, .admin-nav-item:focus { background: #3498db !important; color: #fff !important; }
+        .admin-nav-item i { margin-right: 15px; width: 20px; }
+        .admin-main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px 16px 30px 16px;
+            width: 100%;
+            min-width: 0;
+            transition: margin-left 0.3s;
         }
-        
-        .admin-nav-item.active { 
-            background: #3498db; 
-            color: white; 
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
         }
-        
-        .admin-nav-item i { 
-            margin-right: 15px; 
-            width: 20px; 
-        }
-        
-        .admin-main { 
-            margin-left: 280px; 
-            padding: 30px; 
-        }
-        
-        .admin-header { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
-            margin-bottom: 35px; 
+        .admin-header {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 32px;
+            padding: 24px 20px 18px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        
-        .admin-stats { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 25px; 
-            margin-bottom: 35px; 
+        .admin-header h1 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #20232a;
         }
-        
-        .stat-card { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
-            border-left: 5px solid #3498db; 
+        .admin-header p {
+            color: #5c6873;
+            font-size: 1.02rem;
         }
-        
-        .stat-number { 
-            font-size: 2.8rem; 
-            font-weight: 800; 
-            color: #2c3e50; 
-            margin-bottom: 12px; 
+        .admin-header .btn-primary {
+            margin-left: 8px;
         }
-        
-        .stat-label { 
-            color: #6c757d; 
-            font-size: 0.95rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
+        @media (max-width: 700px) {
+            .admin-header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px 10px;}
+            .admin-header .btn-primary { margin-left: 0; margin-top: 8px;}
         }
-        
-        .tab-content { 
-            display: none; 
+        .admin-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 36px;
+            padding-bottom: 10px;
         }
-        
-        .tab-content.active { 
-            display: block; 
-        }
-        
-        .admin-content { 
-            background: white; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
-            margin-bottom: 35px; 
-        }
-        
-        .content-header { 
-            background: #f8f9fa; 
-            padding: 25px 30px; 
-            border-bottom: 1px solid #e9ecef; 
+        .content-header {
+            background: #fff;
+            padding: 22px 18px 14px 18px;
             display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #f0f1f3;
+            border-radius: 16px 16px 0 0;
         }
-        
-        .content-body { 
-            padding: 30px; 
+        @media (max-width: 600px) {
+            .content-header {padding: 14px 8px; flex-direction: column; gap: 10px; align-items: flex-start;}
         }
-        
-        .btn-primary { 
-            background: #3498db; 
-            color: white; 
-            padding: 14px 24px; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-size: 1rem; 
-            font-weight: 600; 
+        .content-body { padding: 20px 14px; }
+        @media (max-width: 700px) {
+            .content-body { padding: 10px 3px;}
+        }
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 26px 12px 22px 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(44,62,80,0.10);
+            border-left: 4px solid #3498db;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #20232a;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.99rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        /* Card for all tables, forms, etc */
+        .admin-content > .content-body > .data-table,
+        .admin-content > .content-body > form,
+        .admin-content > .content-body > .bulk-actions,
+        .admin-content > .content-body > #pending-properties-list,
+        .admin-content > .content-body > #all-properties-list,
+        .admin-content > .content-body > #users-table-body,
+        .admin-content > .content-body > #transactions-table-body {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(44,62,80,0.10);
+            margin-bottom: 24px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+        .data-table table { width: 100%; border-collapse: collapse;}
+        .data-table th, .data-table td {
+            padding: 14px 14px;
+            text-align: left;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 1.04rem;
+        }
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.93rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        .status-approved, .status-active { background: #27ae60; color: white; }
+        .status-pending { background: #f39c12; color: white; }
+        .status-rejected, .status-suspended { background: #e74c3c; color: white; }
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.97rem;
+            margin-right: 8px;
+            color: white;
             transition: all 0.3s ease;
         }
-
-        .btn-primary:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-        }
-        
-        .data-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            background: white; 
-            border-radius: 12px; 
-            overflow: hidden; 
-        }
-        
-        .data-table th, .data-table td { 
-            padding: 18px 20px; 
-            text-align: left; 
-            border-bottom: 1px solid #f1f3f4; 
-        }
-        
-        .data-table th { 
-            background: #f8f9fa; 
-            font-weight: 700; 
-            color: #2c3e50; 
-        }
-        
-        .status-badge { 
-            padding: 6px 12px; 
-            border-radius: 20px; 
-            font-size: 0.8rem; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-        }
-        
-        .status-approved { 
-            background: #27ae60; 
-            color: white; 
-        }
-        
-        .status-pending { 
-            background: #f39c12; 
-            color: white; 
-        }
-        
-        .status-rejected { 
-            background: #e74c3c; 
-            color: white; 
-        }
-        
-        .status-suspended { 
-            background: #e74c3c; 
-            color: white; 
-        }
-        
-        .action-btn { 
-            padding: 10px 18px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 0.9rem; 
-            margin-right: 8px; 
-            color: white; 
-            transition: all 0.3s ease;
-        }
-        
-        .btn-edit { 
-            background: #3498db; 
-        }
-        
-        .btn-delete { 
-            background: #e74c3c; 
-        }
-        
-        .btn-approve { 
-            background: #27ae60; 
-        }
-        
-        .btn-reject { 
-            background: #f39c12; 
-        }
-
-        .btn-view {
-            background: #9b59b6;
-        }
-
+        .btn-edit { background: #3498db;}
+        .btn-delete { background: #e74c3c;}
+        .btn-approve { background: #27ae60;}
+        .btn-reject { background: #f39c12;}
+        .btn-view { background: #9b59b6;}
         .action-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        
-        .form-group { 
-            margin-bottom: 25px; 
-        }
-        
-        .form-group label { 
-            display: block; 
-            margin-bottom: 10px; 
-            font-weight: 700; 
-            color: #2c3e50; 
-        }
-        
-        .form-control { 
-            width: 100%; 
-            padding: 16px 20px; 
-            border: 2px solid #e9ecef; 
-            border-radius: 12px; 
-            font-size: 1rem; 
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-        
-        .form-row { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 25px; 
-            margin-bottom: 25px; 
-        }
-        
-        .search-bar { 
-            display: flex; 
-            gap: 20px; 
-            margin-bottom: 25px; 
-            align-items: center; 
-        }
-        
-        .search-input { 
-            flex: 1; 
-            padding: 16px 20px; 
-            border: 2px solid #e9ecef; 
-            border-radius: 12px; 
-            font-size: 1rem; 
-        }
-        
-        .filter-select { 
-            padding: 16px 20px; 
-            border: 2px solid #e9ecef; 
-            border-radius: 12px; 
-            font-size: 1rem; 
-            min-width: 180px; 
-        }
-
-        .property-card {
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .property-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-
-        .property-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .property-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-
-        .property-meta {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        .property-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .detail-item i {
-            color: #3498db;
-            width: 16px;
-        }
-
-        .property-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: #000;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
+        .btn-primary {
+            background: #3498db;
             color: white;
-            font-weight: 600;
-            z-index: 3000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            margin-bottom: 2px;
         }
-
-        .notification.show {
-            transform: translateX(0);
+        .btn-primary:hover { background: #2980b9; transform: translateY(-2px);}
+        .btn-primary[style*="background: #e74c3c"] { background: #e74c3c !important; }
+        .search-bar {
+            display: flex; gap: 16px; margin-bottom: 20px;
+            align-items: center; background: #f7f8fa;
+            padding: 13px 15px; border-radius: 12px;
+            box-shadow: 0 1px 6px rgba(44,62,80,0.07);
         }
-
-        .notification.success {
-            background: #27ae60;
+        .search-input {
+            flex: 1; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 1rem; background: #fff;
         }
-
-        .notification.error {
-            background: #e74c3c;
+        .filter-select {
+            padding: 13px 15px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 1rem; min-width: 140px;
         }
-
-        .notification.warning {
-            background: #f39c12;
+        /* Homepage Content Form Improvements */
+        #homepage-form {
+            max-width: 650px;
+            margin: 0 auto;
+            background: #f8faff;
+            padding: 22px 10px 10px 10px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(44,62,80,0.07);
         }
-
+        #homepage-form .form-group, #homepage-form .form-row { margin-bottom: 18px; }
+        #homepage-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px;}
+        @media (max-width: 700px) { #homepage-form .form-row { grid-template-columns: 1fr; gap: 10px;} }
+        #homepage-form label { font-weight: 600; letter-spacing: 0.01em; margin-bottom: 8px; font-size: 1.08rem; color: #2c3e50;}
+        #homepage-form .form-control.big-input, #homepage-form .form-control.big-select {
+            height: 48px; font-size: 1.1rem; padding: 0 16px; border-radius: 12px;
+        }
+        #homepage-form .form-control.big-select { min-width: 170px; }
+        #homepage-form .form-control.big-input { min-width: 200px; }
+        #homepage-form .form-control.big-textarea {
+            font-size: 1.07rem; min-height: 90px;
+            padding: 12px 16px; border-radius: 12px; resize: vertical;
+        }
+        #homepage-form .btn-primary.big-submit { width: 100%; padding: 15px 0; font-size: 1.08rem; border-radius: 12px; margin-top: 10px;}
+        /* Misc. */
         .bulk-actions {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: center;
+            display: flex; gap: 13px; margin-bottom: 16px; align-items: center;
+            background: #f7f8fa; padding: 9px 13px; border-radius: 12px; box-shadow: 0 1px 6px rgba(44,62,80,0.07);
         }
-
-        .bulk-actions select {
-            padding: 10px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-        }
-
-        .checkbox-column {
-            width: 40px;
-        }
-
-        .checkbox-column input[type="checkbox"] {
-            transform: scale(1.2);
-            accent-color: #3498db;
-        }
-
-        @media (max-width: 768px) {
-            .admin-layout {
-                grid-template-columns: 1fr;
-            }
-            
+        .bulk-actions select { padding: 8px 10px; border: 2px solid #e9ecef; border-radius: 8px; }
+        .checkbox-column { width: 40px;}
+        .checkbox-column input[type="checkbox"] { transform: scale(1.2); accent-color: #3498db; }
+        /* Modal, notification, property card (unchanged) */
+        /* Mobile sidebar overlay */
+        #sidebar-overlay { display: none;}
+        @media (max-width: 900px) {
             .admin-sidebar {
+                left: -260px;
                 position: fixed;
-                left: -280px;
-                transition: left 0.3s ease;
             }
-            
-            .admin-sidebar.open {
-                left: 0;
+            .admin-sidebar.open { left: 0;}
+            #sidebar-overlay {
+                display: block;
+                position: fixed; z-index: 999;
+                left: 0; top: 0; right: 0; bottom: 0;
+                background: rgba(44,62,80,0.13);
+                transition: opacity 0.3s;
+                opacity: 0; pointer-events: none;
             }
-            
+            #sidebar-overlay.active {
+                opacity: 1;
+                pointer-events: all;
+            }
             .admin-main {
                 margin-left: 0;
+                padding: 16px 5vw 10px 5vw;
+                min-width: 0;
             }
-            
+        }
+        .mobile-menu-btn {
+            display: none;
+        }
+        @media (max-width:900px) {
             .mobile-menu-btn {
-                display: block;
+                display: block !important;
                 position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1001;
+                top: 18px;
+                left: 12px;
+                z-index: 1101;
                 background: #3498db;
                 color: white;
                 border: none;
-                padding: 10px;
-                border-radius: 8px;
+                padding: 12px 14px;
+                border-radius: 10px;
                 cursor: pointer;
+                font-size: 1.18rem;
+                box-shadow: 0 2px 10px rgba(44,62,80,0.12);
             }
-        }
-
-        .mobile-menu-btn {
-            display: none;
         }
     </style>
 </head>
 <body>
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+    <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+    <button class="mobile-menu-btn" onclick="toggleSidebar(true)">
         <i class="fas fa-bars"></i>
     </button>
-
     <div class="admin-layout">
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-logo">
@@ -509,7 +334,6 @@
                 <h2>CribzConnect</h2>
                 <div>Admin Dashboard</div>
             </div>
-            
             <nav class="admin-nav">
                 <div class="admin-nav-item active" data-tab="overview">
                     <i class="fas fa-tachometer-alt"></i> Dashboard Overview
@@ -537,8 +361,8 @@
                 </div>
             </nav>
         </aside>
-
         <main class="admin-main">
+            <div class="main-container">
             <div class="admin-header">
                 <div>
                     <h1 id="page-title">Dashboard Overview</h1>
@@ -553,7 +377,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- Dashboard Overview -->
             <div class="tab-content active" id="overview">
                 <div class="admin-stats">
@@ -574,7 +397,6 @@
                         <div class="stat-label">Total Revenue</div>
                     </div>
                 </div>
-
                 <div class="admin-content">
                     <div class="content-header">
                         <h2>Recent Activity</h2>
@@ -611,7 +433,7 @@
                                         <td>Mike Johnson</td>
                                         <td>-</td>
                                         <td>6 hours ago</td>
-                                        <td><span class="status-badge status-approved">Active</span></td>
+                                        <td><span class="status-badge status-active">Active</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -619,7 +441,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Pending Properties -->
             <div class="tab-content" id="pending-properties">
                 <div class="admin-content">
@@ -642,14 +463,12 @@
                             </select>
                             <button class="btn-primary" onclick="executeBulkAction('pending')">Apply</button>
                         </div>
-
                         <div id="pending-properties-list">
                             <!-- Pending properties will be loaded here -->
                         </div>
                     </div>
                 </div>
             </div>
-
             <!-- All Properties -->
             <div class="tab-content" id="all-properties">
                 <div class="admin-content">
@@ -676,14 +495,12 @@
                                 <option value="office">Office</option>
                             </select>
                         </div>
-
                         <div id="all-properties-list">
                             <!-- All properties will be loaded here -->
                         </div>
                     </div>
                 </div>
             </div>
-
             <!-- User Management -->
             <div class="tab-content" id="users">
                 <div class="admin-content">
@@ -709,7 +526,6 @@
                                 <option value="pending">Pending</option>
                             </select>
                         </div>
-                        
                         <div class="data-table">
                             <table>
                                 <thead>
@@ -735,7 +551,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Homepage Content -->
             <div class="tab-content" id="homepage-content">
                 <div class="admin-content">
@@ -749,58 +564,51 @@
                         <form id="homepage-form">
                             <div class="form-group">
                                 <label>Hero Section Title</label>
-                                <input type="text" class="form-control" id="hero-title" value="Find Your Perfect Home">
+                                <input type="text" class="form-control big-input" id="hero-title" value="Find Your Perfect Home">
                             </div>
-                            
                             <div class="form-group">
                                 <label>Hero Section Subtitle</label>
-                                <textarea class="form-control" id="hero-subtitle" rows="3">Discover amazing properties and connect with trusted hosts in your area.</textarea>
+                                <textarea class="form-control big-textarea" id="hero-subtitle" rows="4">Discover amazing properties and connect with trusted hosts in your area.</textarea>
                             </div>
-
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Featured Properties Section Title</label>
-                                    <input type="text" class="form-control" id="featured-title" value="Featured Properties">
+                                    <input type="text" class="form-control big-input" id="featured-title" value="Featured Properties">
                                 </div>
                                 <div class="form-group">
                                     <label>Number of Featured Properties</label>
-                                    <select class="form-control" id="featured-count">
+                                    <select class="form-control big-select" id="featured-count">
                                         <option value="6">6 Properties</option>
                                         <option value="8" selected>8 Properties</option>
                                         <option value="12">12 Properties</option>
                                     </select>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label>About Section Content</label>
-                                <textarea class="form-control" id="about-content" rows="5">CribzConnect is your trusted platform for finding and listing properties. We connect property owners with potential renters, making the process simple and secure.</textarea>
+                                <textarea class="form-control big-textarea" id="about-content" rows="6">CribzConnect is your trusted platform for finding and listing properties. We connect property owners with pot[...]</textarea>
                             </div>
-
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Contact Email</label>
-                                    <input type="email" class="form-control" id="contact-email" value="info@cribzconnect.com">
+                                    <input type="email" class="form-control big-input" id="contact-email" value="info@cribzconnect.com">
                                 </div>
                                 <div class="form-group">
                                     <label>Contact Phone</label>
-                                    <input type="tel" class="form-control" id="contact-phone" value="+237 123 456 789">
+                                    <input type="tel" class="form-control big-input" id="contact-phone" value="+237 123 456 789">
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label>Announcement Banner (Optional)</label>
-                                <textarea class="form-control" id="announcement" rows="2" placeholder="Enter announcement text or leave empty to hide banner"></textarea>
+                                <textarea class="form-control big-textarea" id="announcement" rows="3" placeholder="Enter announcement text or leave empty to hide banner"></textarea>
                             </div>
-
-                            <button type="submit" class="btn-primary">
+                            <button type="submit" class="btn-primary big-submit">
                                 <i class="fas fa-save"></i> Save Changes
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
-
             <!-- Transactions -->
             <div class="tab-content" id="transactions">
                 <div class="admin-content">
@@ -827,7 +635,6 @@
                                 <option value="failed">Failed</option>
                             </select>
                         </div>
-                        
                         <div class="data-table">
                             <table>
                                 <thead>
@@ -850,7 +657,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Platform Settings -->
             <div class="tab-content" id="settings">
                 <div class="admin-content">
@@ -863,7 +669,6 @@
                     <div class="content-body">
                         <form id="settings-form">
                             <h3 style="margin-bottom: 20px; color: #2c3e50;">General Settings</h3>
-                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Platform Name</label>
@@ -878,9 +683,7 @@
                                     </select>
                                 </div>
                             </div>
-
                             <h3 style="margin: 30px 0 20px 0; color: #2c3e50;">Commission & Fees</h3>
-                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Service Fee Percentage (%)</label>
@@ -891,7 +694,6 @@
                                     <input type="number" class="form-control" id="min-payout" value="10000" min="1000">
                                 </div>
                             </div>
-
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Host Commission (%)</label>
@@ -902,9 +704,7 @@
                                     <input type="number" class="form-control" id="processing-fee" value="2.5" min="0" max="10" step="0.1">
                                 </div>
                             </div>
-
                             <h3 style="margin: 30px 0 20px 0; color: #2c3e50;">Property Management</h3>
-                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Auto-approve Properties</label>
@@ -918,7 +718,6 @@
                                     <input type="number" class="form-control" id="max-images" value="10" min="1" max="20">
                                 </div>
                             </div>
-
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Property Listing Duration (days)</label>
@@ -929,28 +728,23 @@
                                     <input type="number" class="form-control" id="featured-fee" value="5000" min="0">
                                 </div>
                             </div>
-
                             <h3 style="margin: 30px 0 20px 0; color: #2c3e50;">Notifications</h3>
-                            
                             <div class="form-group">
                                 <label>
                                     <input type="checkbox" id="email-notifications" checked style="margin-right: 10px;">
                                     Send email notifications to users
                                 </label>
                             </div>
-                            
                             <div class="form-group">
                                 <label>
                                     <input type="checkbox" id="sms-notifications" style="margin-right: 10px;">
                                     Send SMS notifications (requires SMS service)
                                 </label>
                             </div>
-
                             <div class="form-group">
                                 <label>Admin Notification Email</label>
                                 <input type="email" class="form-control" id="admin-email" value="admin@cribzconnect.com">
                             </div>
-
                             <button type="submit" class="btn-primary">
                                 <i class="fas fa-save"></i> Save Settings
                             </button>
@@ -958,7 +752,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Reports & Analytics -->
             <div class="tab-content" id="reports">
                 <div class="admin-content">
@@ -987,7 +780,6 @@
                                 <div class="stat-label">Property Approval Rate</div>
                             </div>
                         </div>
-
                         <div style="margin-top: 30px;">
                             <h3 style="margin-bottom: 20px; color: #2c3e50;">Quick Reports</h3>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
@@ -998,685 +790,57 @@
                                     <i class="fas fa-home"></i> Property Report
                                 </button>
                                 <button class="btn-primary" onclick="downloadReport('revenue')">
-                                    <i class="fas fa-money-bill"></i> Revenue Report
+                                    <i class="fas fa-coins"></i> Revenue Report
                                 </button>
                                 <button class="btn-primary" onclick="downloadReport('activity')">
-                                    <i class="fas fa-chart-bar"></i> Activity Report
+                                    <i class="fas fa-bolt"></i> Activity Report
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            </div>
         </main>
     </div>
-
-    <!-- Property Details Modal -->
-    <div id="property-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-property-title">Property Details</h2>
-                <span class="close" onclick="closeModal('property-modal')">&times;</span>
-            </div>
-            <div id="modal-property-content">
-                <!-- Property details will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification Container -->
-    <div id="notification" class="notification"></div>
-
     <script>
-        class AdminPanel {
-            constructor() {
-                this.currentTab = 'overview';
-                this.properties = this.generateSampleProperties();
-                this.users = this.generateSampleUsers();
-                this.transactions = this.generateSampleTransactions();
-                this.init();
-            }
-
-            init() {
-                this.checkAuth();
-                this.bindEvents();
-                this.loadTabContent();
-            }
-
-            checkAuth() {
-                const isLoggedIn = localStorage.getItem('admin_logged_in');
-                if (!isLoggedIn) {
-                    window.location.href = 'admin_login.html';
-                }
-            }
-
-            bindEvents() {
-                document.querySelectorAll('.admin-nav-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        this.switchTab(e.currentTarget.dataset.tab);
-                    });
-                });
-
-                // Search and filter events
-                document.getElementById('property-search')?.addEventListener('input', () => this.filterProperties());
-                document.getElementById('property-status-filter')?.addEventListener('change', () => this.filterProperties());
-                document.getElementById('property-type-filter')?.addEventListener('change', () => this.filterProperties());
-                
-                document.getElementById('user-search')?.addEventListener('input', () => this.filterUsers());
-                document.getElementById('user-role-filter')?.addEventListener('change', () => this.filterUsers());
-                document.getElementById('user-status-filter')?.addEventListener('change', () => this.filterUsers());
-
-                // Form submissions
-                document.getElementById('homepage-form')?.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.saveHomepageContent();
-                });
-
-                document.getElementById('settings-form')?.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.saveSettings();
-                });
-            }
-
-            switchTab(tabName) {
-                // Update navigation
-                document.querySelectorAll('.admin-nav-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-                // Update content
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                document.getElementById(tabName).classList.add('active');
-
-                // Update page title
-                const titles = {
-                    'overview': 'Dashboard Overview',
-                    'pending-properties': 'Pending Properties',
-                    'all-properties': 'All Properties',
-                    'users': 'User Management',
-                    'homepage-content': 'Homepage Content',
-                    'transactions': 'Transactions',
-                    'settings': 'Platform Settings',
-                    'reports': 'Reports & Analytics'
-                };
-                document.getElementById('page-title').textContent = titles[tabName] || 'Admin Dashboard';
-
-                this.currentTab = tabName;
-                this.loadTabContent();
-
-                // Close mobile sidebar
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebar').classList.remove('open');
-                }
-            }
-
-            loadTabContent() {
-                switch(this.currentTab) {
-                    case 'pending-properties':
-                        this.loadPendingProperties();
-                        break;
-                    case 'all-properties':
-                        this.loadAllProperties();
-                        break;
-                    case 'users':
-                        this.loadUsers();
-                        break;
-                    case 'transactions':
-                        this.loadTransactions();
-                        break;
-                }
-            }
-
-            generateSampleProperties() {
-                return [
-                    {
-                        id: 'P001',
-                        title: 'Luxury Downtown Apartment',
-                        host: 'John Doe',
-                        type: 'apartment',
-                        price: '250,000 XAF',
-                        location: 'Douala, Cameroon',
-                        bedrooms: 3,
-                        bathrooms: 2,
-                        area: '120 sqm',
-                        status: 'pending',
-                        submitted: '2 hours ago',
-                        description: 'Beautiful luxury apartment in the heart of downtown with modern amenities.',
-                        amenities: ['WiFi', 'Air Conditioning', 'Parking', 'Security'],
-                        images: 5
-                    },
-                    {
-                        id: 'P002',
-                        title: 'Cozy Studio Near University',
-                        host: 'Jane Smith',
-                        type: 'studio',
-                        price: '120,000 XAF',
-                        location: 'Yaoundé, Cameroon',
-                        bedrooms: 1,
-                        bathrooms: 1,
-                        area: '45 sqm',
-                        status: 'approved',
-                        submitted: '1 day ago',
-                        description: 'Perfect studio for students, close to university campus.',
-                        amenities: ['WiFi', 'Furnished', 'Kitchen'],
-                        images: 3
-                    },
-                    {
-                        id: 'P003',
-                        title: 'Modern Family House',
-                        host: 'Mike Johnson',
-                        type: 'house',
-                        price: '450,000 XAF',
-                        location: 'Bamenda, Cameroon',
-                        bedrooms: 4,
-                        bathrooms: 3,
-                        area: '200 sqm',
-                        status: 'pending',
-                        submitted: '5 hours ago',
-                        description: 'Spacious family house with garden and modern facilities.',
-                        amenities: ['Garden', 'Garage', 'Security', 'Generator'],
-                        images: 8
-                    },
-                    {
-                        id: 'P004',
-                        title: 'Executive Office Space',
-                        host: 'Sarah Wilson',
-                        type: 'office',
-                        price: '180,000 XAF',
-                        location: 'Douala, Cameroon',
-                        bedrooms: 0,
-                        bathrooms: 2,
-                        area: '80 sqm',
-                        status: 'rejected',
-                        submitted: '3 days ago',
-                        description: 'Professional office space in business district.',
-                        amenities: ['WiFi', 'Air Conditioning', 'Parking', 'Reception'],
-                        images: 4
-                    }
-                ];
-            }
-
-            generateSampleUsers() {
-                return [
-                    {
-                        id: 'U001',
-                        name: 'John Doe',
-                        email: 'john.doe@email.com',
-                        role: 'host',
-                        status: 'active',
-                        joined: '2024-01-15',
-                        properties: 3,
-                        phone: '+237 123 456 789'
-                    },
-                    {
-                        id: 'U002',
-                        name: 'Jane Smith',
-                        email: 'jane.smith@email.com',
-                        role: 'agent',
-                        status: 'active',
-                        joined: '2024-01-20',
-                        properties: 5,
-                        phone: '+237 987 654 321'
-                    },
-                    {
-                        id: 'U003',
-                        name: 'Mike Johnson',
-                        email: 'mike.j@email.com',
-                        role: 'renter',
-                        status: 'pending',
-                        joined: '2024-02-01',
-                        properties: 0,
-                        phone: '+237 555 123 456'
-                    }
-                ];
-            }
-
-            generateSampleTransactions() {
-                return [
-                    {
-                        id: 'TX001',
-                        type: 'booking',
-                        amount: '150,000 XAF',
-                        user: 'John Doe',
-                        property: 'Luxury Downtown Apartment',
-                        status: 'completed',
-                        date: '2024-02-01'
-                    },
-                    {
-                        id: 'TX002',
-                        type: 'commission',
-                        amount: '15,000 XAF',
-                        user: 'Platform',
-                        property: 'Cozy Studio Near University',
-                        status: 'completed',
-                        date: '2024-02-01'
-                    }
-                ];
-            }
-
-            loadPendingProperties() {
-                const pendingProperties = this.properties.filter(p => p.status === 'pending');
-                const container = document.getElementById('pending-properties-list');
-                
-                container.innerHTML = pendingProperties.map(property => `
-                    <div class="property-card">
-                        <div class="property-header">
-                            <div>
-                                <div class="property-title">${property.title}</div>
-                                <div class="property-meta">
-                                    Submitted by ${property.host} • ${property.submitted}
-                                </div>
-                            </div>
-                            <input type="checkbox" class="property-checkbox" value="${property.id}">
-                        </div>
-                        
-                        <div class="property-details">
-                            <div class="detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${property.location}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-home"></i>
-                                <span>${property.type.charAt(0).toUpperCase() + property.type.slice(1)}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-money-bill"></i>
-                                <span>${property.price}/month</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-bed"></i>
-                                <span>${property.bedrooms} bed, ${property.bathrooms} bath</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-expand-arrows-alt"></i>
-                                <span>${property.area}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-images"></i>
-                                <span>${property.images} images</span>
-                            </div>
-                        </div>
-                        
-                        <div class="property-actions">
-                            <button class="action-btn btn-view" onclick="viewProperty('${property.id}')">
-                                <i class="fas fa-eye"></i> View Details
-                            </button>
-                            <button class="action-btn btn-approve" onclick="approveProperty('${property.id}')">
-                                <i class="fas fa-check"></i> Approve
-                            </button>
-                            <button class="action-btn btn-reject" onclick="rejectProperty('${property.id}')">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                            <button class="action-btn btn-edit" onclick="editProperty('${property.id}')">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            loadAllProperties() {
-                const container = document.getElementById('all-properties-list');
-                
-                container.innerHTML = this.properties.map(property => `
-                    <div class="property-card">
-                        <div class="property-header">
-                            <div>
-                                <div class="property-title">${property.title}</div>
-                                <div class="property-meta">
-                                    Host: ${property.host} • ${property.submitted}
-                                </div>
-                            </div>
-                            <span class="status-badge status-${property.status}">${property.status.charAt(0).toUpperCase() + property.status.slice(1)}</span>
-                        </div>
-                        
-                        <div class="property-details">
-                            <div class="detail-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${property.location}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-home"></i>
-                                <span>${property.type.charAt(0).toUpperCase() + property.type.slice(1)}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-money-bill"></i>
-                                <span>${property.price}/month</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-bed"></i>
-                                <span>${property.bedrooms} bed, ${property.bathrooms} bath</span>
-                            </div>
-                        </div>
-                        
-                        <div class="property-actions">
-                            <button class="action-btn btn-view" onclick="viewProperty('${property.id}')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="action-btn btn-edit" onclick="editProperty('${property.id}')">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            ${property.status === 'pending' ? `
-                                <button class="action-btn btn-approve" onclick="approveProperty('${property.id}')">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="action-btn btn-reject" onclick="rejectProperty('${property.id}')">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                            ` : ''}
-                            <button class="action-btn btn-delete" onclick="deleteProperty('${property.id}')">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            loadUsers() {
-                const tbody = document.getElementById('users-table-body');
-                
-                tbody.innerHTML = this.users.map(user => `
-                    <tr>
-                        <td class="checkbox-column">
-                            <input type="checkbox" class="user-checkbox" value="${user.id}">
-                        </td>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</td>
-                        <td><span class="status-badge status-${user.status}">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span></td>
-                        <td>${user.joined}</td>
-                        <td>${user.properties}</td>
-                        <td>
-                            <button class="action-btn btn-view" onclick="viewUser('${user.id}')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" onclick="editUser('${user.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" onclick="deleteUser('${user.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            loadTransactions() {
-                const tbody = document.getElementById('transactions-table-body');
-                
-                tbody.innerHTML = this.transactions.map(transaction => `
-                    <tr>
-                        <td>${transaction.id}</td>
-                        <td>${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}</td>
-                        <td>${transaction.amount}</td>
-                        <td>${transaction.user}</td>
-                        <td>${transaction.property}</td>
-                        <td><span class="status-badge status-${transaction.status}">${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</span></td>
-                        <td>${transaction.date}</td>
-                        <td>
-                            <button class="action-btn btn-view" onclick="viewTransaction('${transaction.id}')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            filterProperties() {
-                // Implementation for property filtering
-                this.loadAllProperties();
-            }
-
-            filterUsers() {
-                // Implementation for user filtering
-                this.loadUsers();
-            }
-
-            saveHomepageContent() {
-                const formData = {
-                    heroTitle: document.getElementById('hero-title').value,
-                    heroSubtitle: document.getElementById('hero-subtitle').value,
-                    featuredTitle: document.getElementById('featured-title').value,
-                    featuredCount: document.getElementById('featured-count').value,
-                    aboutContent: document.getElementById('about-content').value,
-                    contactEmail: document.getElementById('contact-email').value,
-                    contactPhone: document.getElementById('contact-phone').value,
-                    announcement: document.getElementById('announcement').value
-                };
-
-                // Save to localStorage (in real app, this would be an API call)
-                localStorage.setItem('homepage_content', JSON.stringify(formData));
-                this.showNotification('Homepage content saved successfully!', 'success');
-            }
-
-            saveSettings() {
-                const formData = {
-                    platformName: document.getElementById('platform-name').value,
-                    platformCurrency: document.getElementById('platform-currency').value,
-                    serviceFee: document.getElementById('service-fee').value,
-                    minPayout: document.getElementById('min-payout').value,
-                    hostCommission: document.getElementById('host-commission').value,
-                    processingFee: document.getElementById('processing-fee').value,
-                    autoApprove: document.getElementById('auto-approve').value,
-                    maxImages: document.getElementById('max-images').value,
-                    listingDuration: document.getElementById('listing-duration').value,
-                    featuredFee: document.getElementById('featured-fee').value,
-                    emailNotifications: document.getElementById('email-notifications').checked,
-                    smsNotifications: document.getElementById('sms-notifications').checked,
-                    adminEmail: document.getElementById('admin-email').value
-                };
-
-                // Save to localStorage (in real app, this would be an API call)
-                localStorage.setItem('platform_settings', JSON.stringify(formData));
-                this.showNotification('Settings saved successfully!', 'success');
-            }
-
-            showNotification(message, type = 'success') {
-                const notification = document.getElementById('notification');
-                notification.textContent = message;
-                notification.className = `notification ${type}`;
-                notification.classList.add('show');
-
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            }
+    function toggleSidebar(forceOpen) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        let open = typeof forceOpen === 'boolean' ? forceOpen : !sidebar.classList.contains('open');
+        if (open) {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = "hidden";
+        } else {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = "";
         }
-
-        // Global functions for button actions
-        function viewProperty(id) {
-            const property = window.adminPanel.properties.find(p => p.id === id);
-            if (property) {
-                document.getElementById('modal-property-title').textContent = property.title;
-                document.getElementById('modal-property-content').innerHTML = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div>
-                            <strong>Host:</strong> ${property.host}<br>
-                            <strong>Type:</strong> ${property.type}<br>
-                            <strong>Price:</strong> ${property.price}/month<br>
-                            <strong>Location:</strong> ${property.location}
-                        </div>
-                        <div>
-                            <strong>Bedrooms:</strong> ${property.bedrooms}<br>
-                            <strong>Bathrooms:</strong> ${property.bathrooms}<br>
-                            <strong>Area:</strong> ${property.area}<br>
-                            <strong>Status:</strong> <span class="status-badge status-${property.status}">${property.status}</span>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <strong>Description:</strong><br>
-                        <p style="margin-top: 10px;">${property.description}</p>
-                    </div>
-                    <div>
-                        <strong>Amenities:</strong><br>
-                        <div style="margin-top: 10px;">
-                            ${property.amenities.map(amenity => `<span style="background: #e9ecef; padding: 4px 8px; border-radius: 4px; margin-right: 8px; margin-bottom: 8px; display: inline-block;">${amenity}</span>`).join('')}
-                        </div>
-                    </div>
-                `;
-                document.getElementById('property-modal').style.display = 'block';
-            }
-        }
-
-        function approveProperty(id) {
-            if (confirm('Are you sure you want to approve this property?')) {
-                const property = window.adminPanel.properties.find(p => p.id === id);
-                if (property) {
-                    property.status = 'approved';
-                    window.adminPanel.loadTabContent();
-                    window.adminPanel.showNotification('Property approved successfully!', 'success');
-                }
-            }
-        }
-
-        function rejectProperty(id) {
-            const reason = prompt('Please provide a reason for rejection:');
-            if (reason) {
-                const property = window.adminPanel.properties.find(p => p.id === id);
-                if (property) {
-                    property.status = 'rejected';
-                    property.rejectionReason = reason;
-                    window.adminPanel.loadTabContent();
-                    window.adminPanel.showNotification('Property rejected successfully!', 'warning');
-                }
-            }
-        }
-
-        function editProperty(id) {
-            window.adminPanel.showNotification('Edit property functionality would open a detailed form here.', 'success');
-        }
-
-        function deleteProperty(id) {
-            if (confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
-                const index = window.adminPanel.properties.findIndex(p => p.id === id);
-                if (index > -1) {
-                    window.adminPanel.properties.splice(index, 1);
-                    window.adminPanel.loadTabContent();
-                    window.adminPanel.showNotification('Property deleted successfully!', 'success');
-                }
-            }
-        }
-
-        function viewUser(id) {
-            window.adminPanel.showNotification('User details would be displayed here.', 'success');
-        }
-
-        function editUser(id) {
-            window.adminPanel.showNotification('Edit user functionality would open here.', 'success');
-        }
-
-        function deleteUser(id) {
-            if (confirm('Are you sure you want to delete this user?')) {
-                window.adminPanel.showNotification('User deleted successfully!', 'success');
-            }
-        }
-
-        function viewTransaction(id) {
-            window.adminPanel.showNotification('Transaction details would be displayed here.', 'success');
-        }
-
-        function bulkApprove() {
-            const checkboxes = document.querySelectorAll('.property-checkbox:checked');
-            if (checkboxes.length === 0) {
-                window.adminPanel.showNotification('Please select properties to approve.', 'warning');
-                return;
-            }
-            
-            if (confirm(`Are you sure you want to approve ${checkboxes.length} properties?`)) {
-                checkboxes.forEach(checkbox => {
-                    approveProperty(checkbox.value);
-                });
-            }
-        }
-
-        function executeBulkAction(type) {
-            const action = document.getElementById(`bulk-action-${type}`).value;
-            const checkboxes = document.querySelectorAll(`.${type === 'pending' ? 'property' : 'user'}-checkbox:checked`);
-            
-            if (!action || checkboxes.length === 0) {
-                window.adminPanel.showNotification('Please select an action and items.', 'warning');
-                return;
-            }
-            
-            window.adminPanel.showNotification(`Bulk ${action} executed on ${checkboxes.length} items.`, 'success');
-        }
-
-        function toggleSelectAll(type) {
-            const selectAll = document.getElementById(`select-all-${type}`);
-            const checkboxes = document.querySelectorAll(`.${type === 'pending' ? 'property' : 'user'}-checkbox`);
-            
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAll.checked;
-            });
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-
-        function refreshData() {
-            window.adminPanel.loadTabContent();
-            window.adminPanel.showNotification('Data refreshed successfully!', 'success');
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('admin_logged_in');
-                localStorage.removeItem('admin_user');
-                window.location.href = 'admin_login.html';
-            }
-        }
-
-        function previewHomepage() {
-            window.adminPanel.showNotification('Homepage preview would open in a new tab.', 'success');
-        }
-
-        function exportProperties() {
-            window.adminPanel.showNotification('Property data exported successfully!', 'success');
-        }
-
-        function exportTransactions() {
-            window.adminPanel.showNotification('Transaction report exported successfully!', 'success');
-        }
-
-        function backupSettings() {
-            window.adminPanel.showNotification('Settings backup created successfully!', 'success');
-        }
-
-        function generateReport() {
-            window.adminPanel.showNotification('Report generated successfully!', 'success');
-        }
-
-        function downloadReport(type) {
-            window.adminPanel.showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} report downloaded!`, 'success');
-        }
-
-        function addUser() {
-            window.adminPanel.showNotification('Add user form would open here.', 'success');
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        }
-
-        // Initialize admin panel when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            window.adminPanel = new AdminPanel();
+    }
+    // Tab navigation (activate tab and update sidebar)
+    document.querySelectorAll('.admin-nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.admin-nav-item').forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            const tab = document.getElementById(this.getAttribute('data-tab'));
+            if (tab) tab.classList.add('active');
+            // Update page title
+            const title = this.textContent.trim();
+            document.getElementById('page-title').textContent = title;
+            // Close sidebar on mobile after selecting
+            if (window.innerWidth < 900) toggleSidebar(false);
         });
+    });
+    // Responsive: make sure sidebar closes on resize to desktop
+    window.addEventListener('resize', function() {
+        if(window.innerWidth > 900) {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+            document.body.style.overflow = "";
+        }
+    });
     </script>
 </body>
 </html>
